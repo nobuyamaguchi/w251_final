@@ -1,0 +1,42 @@
+# FROM nvcr.io/nvidia/l4t-ml:r32.4.3-py3
+#FROM python:3.5
+
+FROM nvcr.io/nvidia/l4t-base:r32.4.3
+
+RUN apt-get update
+RUN apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl vim-tiny \
+    gnupg-agent \
+    software-properties-common
+RUN apt-key adv --fetch-key https://repo.download.nvidia.com/jetson/jetson-ota-public.asc
+## This matches the nx2 and the current jetpack version
+RUN add-apt-repository "deb https://repo.download.nvidia.com/jetson/common r32.4 main"
+RUN add-apt-repository "deb https://repo.download.nvidia.com/jetson/t194 r32.4 main"
+RUN apt-get update
+RUN apt install -y nvidia-opencv python3-dev python3-pip
+RUN pip3 install Cython  &&  pip3 install numpy
+RUN pip3 install paho-mqtt
+RUN apt-get install -y mosquitto-clients
+
+# added on 11.27
+RUN apt-get install -y libcanberra-gtk-module
+
+# Create working directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+#11.22 libglib2.0-0 added 
+#RUN apt-get update && apt-get install -y libffi-dev python3-pip python3-tk libopencv-dev python3-opencv mosquitto-clients 
+# libglib2.0-0
+#RUN pip3 install opencv-contrib-python-headless
+
+#RUN pip3 install opencv-python
+#RUN pip3 install paho-mqtt
+
+ADD detector.py /usr/src/app
+
+# added on 11.22
+ADD yolov3_training_final.weights /usr/src/app
+Add yolov3_testing.cfg /usr/src/app

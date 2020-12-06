@@ -1,0 +1,16 @@
+FROM python:3-alpine
+
+RUN apk update
+
+ENV DEBIAN_FRONTEND noninteractive
+RUN apk update && apk add mosquitto
+RUN pip3 install paho-mqtt
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+ADD forwarder.py /usr/src/app
+
+CMD python3 forwarder.py
+
+
